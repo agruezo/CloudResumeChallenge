@@ -1,0 +1,100 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  # pull_request:
+  #   branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    defaults:
+      run:
+        working-directory: ./backend
+
+    name: Terraform Deploy AWS Infrastructure
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2.0.0
+      with: 
+        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+    - name: Terraform Init
+      run: terraform init -upgrade
+
+    - name: Terraform Format
+      run: terraform fmt -check
+
+    - name: Terraform Plan
+      run: terraform plan -input=false
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terraform apply -auto-approve -input=false
+
+    
+
+  cypress-run:
+
+    runs-on: ubuntu-latest
+    needs: terraform
+    container: cypress/browsers:node16.13.0-chrome95-ff94
+
+    name: E2E on Chrome
+
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - name: Cypress.io
+        uses: cypress-io/github-action@v4.2.0
+        with: 
+          browser: chrome
+          working-directory: tests/integration
+
+  aws_s3_bucket:
+
+    runs-on: ubuntu-latest
+    needs: cypress-run
+
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: S3 Bucket Sync
+        run: |
+          aws s3 sync ./frontend s3://${{ secrets.AWS_S3_BUCKET }} --delete --exclude '.git*/*' --exclude '*.DS_Store' 
+
+  # aws_cloudfront:
+
+  #   runs-on: ubuntu-latest
+  #   needs: aws_s3_bucket
+
+  #   steps:
+
+  #     - name: Configure AWS Credentials
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+  #         aws-region: ${{ secrets.AWS_REGION }}
+
+  #     - name: Invalidate CloudFront with the AWS CLI
+  #       run: |
+  #         aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION }} --paths "/*" 
+
