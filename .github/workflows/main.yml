@@ -50,13 +50,13 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-      - name: Cypress.io
-        uses: cypress-io/github-action@v4.2.0
-        with: 
-          browser: chrome
-          working-directory: tests/integration
+    - name: Cypress.io
+      uses: cypress-io/github-action@v4.2.0
+      with: 
+        browser: chrome
+        working-directory: tests/integration
 
   aws_s3_bucket:
 
@@ -65,18 +65,18 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-          aws-region: ${{ secrets.AWS_REGION }}
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+        aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: S3 Bucket Sync
-        run: |
-          aws s3 sync ./frontend s3://${{ secrets.AWS_S3_BUCKET }} --delete --exclude '.git*/*' --exclude '*.DS_Store' 
+    - name: S3 Bucket Sync
+      run: |
+        aws s3 sync ./frontend s3://${{ secrets.AWS_S3_BUCKET }} --delete --exclude '.git*/*' --exclude '*.DS_Store' 
 
   aws_cloudfront:
 
