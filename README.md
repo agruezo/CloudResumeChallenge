@@ -1,5 +1,5 @@
 <p align ="center">
-<img width="800" src ="https://user-images.githubusercontent.com/90926044/194937256-2c3dcf70-e0d5-4c0a-84cf-2091dfcd8c5a.png">
+<img width="800" src ="https://user-images.githubusercontent.com/90926044/194941891-dcb27816-0beb-4711-b25a-2a7cb4f05ea4.png">
 </p>
 
 ![CI/CD](https://github.com/agruezo/CloudResumeChallenge/actions/workflows/main.yml/badge.svg)
