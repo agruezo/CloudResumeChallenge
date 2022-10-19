@@ -52,7 +52,8 @@ This is a summary of the actual code related tasks I had to complete for the Clo
 
 10. **Tests**
     - Test the code to make sure it is functioning properly
-    - A Cypress end-to-end test was used in my case to test the API created
+    - A PyTest unit test was used to test the python code for the lambda function
+    - A Cypress end-to-end test was used to test the API created
 
 11. **Infrastructure as Code**
     - Provision the API Gateway, Lambda function, and DynamoDB using IaC
