@@ -9,6 +9,8 @@ on:
 jobs:
 
   build:
+
+    name: PyTest Unit Test
     runs-on: ubuntu-latest
 
     steps:
@@ -88,6 +90,7 @@ jobs:
 
   aws_s3_bucket:
 
+    name: AWS S3 Bucket Upload
     runs-on: ubuntu-latest
     needs: cypress-run
 
@@ -108,6 +111,7 @@ jobs:
 
   aws_cloudfront:
 
+    name: AWS CloudFront Invalidation
     runs-on: ubuntu-latest
     needs: aws_s3_bucket
 
