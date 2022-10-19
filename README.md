@@ -64,11 +64,11 @@ This is a summary of the actual code related tasks I had to complete for the Clo
     - GitHub was the obvious tool of choice in my case
 
 13. **CI/CD Backend**
-    - Any updates to the infrastructure or Python code pushed should automatically be packaged and deployed onto AWS
+    - Any updates to the infrastructure or Python code pushed should automatically be packaged and deployed onto AWS as long as it passes testing
     - GitHub Actions was used to handle this process
 
 14. **CI/CD Frontend**
-    - Any new website code pushed would automatically update the S3 bucket with the new code
+    - Any new website code pushed would automatically update the S3 bucket with the new code as long as it passes testing
     - A Cloudfront invalidation was also triggered after a successful upload to the S3 bucket in order to publish the changes immediately
     - GitHub Actions was also used to handle this process
 
