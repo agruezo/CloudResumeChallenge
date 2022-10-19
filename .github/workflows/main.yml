@@ -24,7 +24,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -U pytest
+        pip install -U pytest boto3
 
     - name: Run PyTest
       run: pytest
