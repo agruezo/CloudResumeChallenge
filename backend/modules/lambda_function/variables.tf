@@ -10,12 +10,6 @@ variable "lambda_function_name" {
     default     = "crc-lambda-function"
 }
 
-variable "rewrite_urls_name" {
-    type        = string
-    description = "The name of the Lambda function for URL rewriting"
-    default     = "rewrite-urls-lambda"
-}
-
 variable "dynamodb_table" {
     type        = string
     description = "The name of the DynamoDB table"

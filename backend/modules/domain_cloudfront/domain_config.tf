@@ -40,22 +40,53 @@ resource "aws_cloudfront_origin_access_control" "oac" {
     signing_protocol                  = "sigv4"
 }
 
-# CLOUDFRONT FUNCTION TO REMOVE .HTML 
+# CLOUDFRONT FUNCTION TO REWRITE CLEAN URL
 
-resource "aws_cloudfront_function" "remove_html" {
-    name    = "remove-html-extension"
+resource "aws_cloudfront_function" "rewrite_html" {
+    name    = "rewrite-html-extension"
     runtime = "cloudfront-js-1.0"
-    comment = "Rewrites URLs to serve corresponding .html files"
+    comment = "Rewrites clean URLs to .html but allows .html links to work"
 
     code = <<-EOF
         function handler(event) {
-        var request = event.request;
-        var uri = request.uri;
-        // If URL ends with ".html", remove the extension
-        if (uri.endsWith(".html")) {
-            request.uri = uri.replace(/\\.html$/, "");
+            var request = event.request;
+            var uri = request.uri;
+            
+            // If the URI has no file extension, append .html
+            if (!uri.includes('.') && uri !== '/') {
+                request.uri += '.html';
+            }
+
+            return request;
         }
-        return request;
+    EOF
+}
+
+# CLOUDFRONT FUNCTION TO REDIRECT HTML
+
+resource "aws_cloudfront_function" "redirect_html" {
+    name    = "redirect-html-to-clean-url"
+    runtime = "cloudfront-js-1.0"
+    comment = "Redirects .html URLs to clean URLs"
+
+    code = <<-EOF
+        function handler(event) {
+            var request = event.request;
+            var response = event.response;
+
+            // If URL ends with .html, redirect to clean version
+            if (request.uri.endsWith(".html")) {
+                var cleanUri = request.uri.replace(/\\.html$/, "");
+                return {
+                    statusCode: 301,
+                    statusDescription: "Moved Permanently",
+                headers: {
+                    location: { value: cleanUri }
+                }
+            };
+        }
+
+        return response;
         }
     EOF
 }
@@ -106,11 +137,6 @@ resource "aws_cloudfront_distribution" "root_s3_distribution" {
         cache_policy_id = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
         target_origin_id = aws_s3_bucket.root_domain.bucket_regional_domain_name
         viewer_protocol_policy = "redirect-to-https"
-
-        function_association {
-            event_type   = "viewer-request"
-            function_arn = aws_cloudfront_function.remove_html.arn
-        }
     } 
 
     restrictions {
@@ -208,6 +234,11 @@ resource "aws_cloudfront_distribution" "sub_s3_distribution" {
         cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"
         target_origin_id = aws_s3_bucket.subdomain.bucket_regional_domain_name
         viewer_protocol_policy = "redirect-to-https"
+
+        function_association {
+            event_type   = "viewer-request"
+            function_arn = aws_cloudfront_function.remove_html.arn
+        }
     }
 
     restrictions {
