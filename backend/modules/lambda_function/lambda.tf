@@ -39,12 +39,6 @@ resource "aws_lambda_function" "rewrite_urls" {
     publish       = true
 
     source_code_hash = filebase64sha256("${path.module}/function_code/rewrite_urls.zip")
-
-    environment {
-        variables = {
-            CLOUDFRONT_DISTRIBUTION_ID = var.cloudfront_distribution_id
-        }
-    }
 }
 
 resource "aws_cloudwatch_log_group" "lambda_log_group" {
