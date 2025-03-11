@@ -40,6 +40,26 @@ resource "aws_cloudfront_origin_access_control" "oac" {
     signing_protocol                  = "sigv4"
 }
 
+# CLOUDFRONT FUNCTION TO REMOVE .HTML 
+
+resource "aws_cloudfront_function" "remove_html" {
+    name    = "remove-html-extension"
+    runtime = "cloudfront-js-1.0"
+    comment = "Rewrites URLs to serve corresponding .html files"
+
+    code = <<-EOF
+        function handler(event) {
+        var request = event.request;
+        var uri = request.uri;
+        // If URL ends with ".html", remove the extension
+        if (uri.endsWith(".html")) {
+            request.uri = uri.replace(/\\.html$/, "");
+        }
+        return request;
+        }
+    EOF
+}
+
 # ROOT DOMAIN S3 BUCKET
 
 resource "aws_s3_bucket" "root_domain" {
@@ -86,6 +106,11 @@ resource "aws_cloudfront_distribution" "root_s3_distribution" {
         cache_policy_id = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
         target_origin_id = aws_s3_bucket.root_domain.bucket_regional_domain_name
         viewer_protocol_policy = "redirect-to-https"
+
+        function_association {
+            event_type   = "viewer-request"
+            function_arn = aws_cloudfront_function.remove_html.arn
+        }
     } 
 
     restrictions {
