@@ -86,12 +86,6 @@ resource "aws_cloudfront_distribution" "root_s3_distribution" {
         cache_policy_id = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
         target_origin_id = aws_s3_bucket.root_domain.bucket_regional_domain_name
         viewer_protocol_policy = "redirect-to-https"
-
-        #lambda_function_association {
-            #event_type   = "viewer-request"
-            #lambda_arn   = module.lambda_function.rewrite_urls_arn
-            #include_body = false
-        #}
     } 
 
     restrictions {
