@@ -60,9 +60,9 @@ jobs:
     - name: Terraform Init
       run: terraform init -upgrade
 
-    - name: Remove Old CloudFront Function from Terraform State
-      continue-on-error: true
-      run: terraform state rm module.domain_cloudfront.aws_cloudfront_function.remove_html
+    #- name: Remove Old CloudFront Function from Terraform State
+      #continue-on-error: true
+      #run: terraform state rm module.domain_cloudfront.aws_cloudfront_function.remove_html
 
     - name: Terraform Format
       run: terraform fmt -check

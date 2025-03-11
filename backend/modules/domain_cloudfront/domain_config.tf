@@ -244,7 +244,7 @@ resource "aws_cloudfront_distribution" "sub_s3_distribution" {
 
         # Redirects ".html" links to clean URLs (when clicking "resume.html")
         function_association {
-            event_type   = "viewer-response"
+            event_type   = "viewer-request"
             function_arn = aws_cloudfront_function.redirect_html.arn
         }
     }
