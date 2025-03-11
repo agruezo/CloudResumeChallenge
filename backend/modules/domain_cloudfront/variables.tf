@@ -21,3 +21,8 @@ variable "api_subdomain" {
     description = "Name of the API Subdomain"
     default     = "api.gruezo.com"
 }
+
+variable "lambda_rewrite_function_arn" {
+    type        = string
+    description = "The ARN of the rewrite URLs Lambda function"
+}

@@ -20,4 +20,5 @@ module "dynamodb" {
 
 module "domain_cloudfront" {
   source = "./modules/domain_cloudfront"
+  lambda_rewrite_function_arn = module.lambda_function.rewrite_urls_arn
 }
