@@ -1,5 +1,12 @@
+# module "lambda_function" {
+  # source = "./modules/lambda_function"
+# }
+
 module "lambda_function" {
-  source = "./modules/lambda_function"
+  source                = "./modules/lambda_function"
+  lambda_function_name  = var.lambda_function_name # Pass lambda function name
+  rewrite_urls_name     = var.rewrite_urls_name  # Pass the rewrite function name
+  s3_bucket_name        = var.s3_bucket_name # Pass s3 bucket name
 }
 
 module "api_gateway" {
