@@ -30,6 +30,23 @@ resource "aws_lambda_function" "lambda_function" {
     role                = aws_iam_role.lambda_execution_role.arn
 }
 
+resource "aws_lambda_function" "rewrite_urls" {
+    function_name = "RewriteURLs"
+    role          = aws_iam_role.lambda_execution_role.arn
+    runtime       = "nodejs18.x"
+    handler       = "rewrite_urls.handler"
+    filename      = "${path.module}/function_code/rewrite_urls.zip"
+    publish       = true
+
+    source_code_hash = filebase64sha256("${path.module}/function_code/rewrite_urls.zip")
+
+    environment {
+        variables = {
+            CLOUDFRONT_DISTRIBUTION_ID = var.cloudfront_distribution_id
+        }
+    }
+}
+
 resource "aws_cloudwatch_log_group" "lambda_log_group" {
     name              = "/aws/lambda/${aws_lambda_function.lambda_function.function_name}"
     retention_in_days = 30
