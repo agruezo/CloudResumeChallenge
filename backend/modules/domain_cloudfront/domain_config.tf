@@ -87,11 +87,11 @@ resource "aws_cloudfront_distribution" "root_s3_distribution" {
         target_origin_id = aws_s3_bucket.root_domain.bucket_regional_domain_name
         viewer_protocol_policy = "redirect-to-https"
 
-        lambda_function_association {
-        event_type   = "viewer-request"
-        lambda_arn   = module.lambda_function.rewrite_urls_arn
-        include_body = false
-    }
+        #lambda_function_association {
+            #event_type   = "viewer-request"
+            #lambda_arn   = module.lambda_function.rewrite_urls_arn
+            #include_body = false
+        #}
     } 
 
     restrictions {
