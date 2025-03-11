@@ -235,9 +235,16 @@ resource "aws_cloudfront_distribution" "sub_s3_distribution" {
         target_origin_id = aws_s3_bucket.subdomain.bucket_regional_domain_name
         viewer_protocol_policy = "redirect-to-https"
 
+        # Rewrites clean URLs to .html (when user types "/resume")
         function_association {
             event_type   = "viewer-request"
-            function_arn = aws_cloudfront_function.remove_html.arn
+            function_arn = aws_cloudfront_function.rewrite_html.arn
+        }
+
+        # Redirects ".html" links to clean URLs (when clicking "resume.html")
+        function_association {
+            event_type   = "viewer-response"
+            function_arn = aws_cloudfront_function.redirect_html.arn
         }
     }
 
