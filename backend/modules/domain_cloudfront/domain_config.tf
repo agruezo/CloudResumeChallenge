@@ -62,36 +62,6 @@ resource "aws_cloudfront_function" "rewrite_html" {
     EOF
 }
 
-# CLOUDFRONT FUNCTION TO REDIRECT HTML
-
-resource "aws_cloudfront_function" "redirect_html" {
-    name    = "redirect-html-to-clean-url"
-    runtime = "cloudfront-js-1.0"
-    comment = "Redirects .html URLs to clean URLs"
-
-    code = <<-EOF
-        function handler(event) {
-            var request = event.request;
-
-            // If URL ends with .html, redirect to clean version
-            if (request.uri.endsWith(".html")) {
-                var cleanUri = request.uri.replace(/\\.html$/, "");
-                return {
-                    statusCode: 301,
-                    statusDescription: "Moved Permanently",
-                    headers: {
-                        location: { value: cleanUri },
-                        "cache-control": { value: "no-store" },
-                        "content-type": { value: "text/html; charset=UTF-8" }
-                    }
-                };
-            }
-
-            return request;
-        }
-    EOF
-}
-
 # ROOT DOMAIN S3 BUCKET
 
 resource "aws_s3_bucket" "root_domain" {
