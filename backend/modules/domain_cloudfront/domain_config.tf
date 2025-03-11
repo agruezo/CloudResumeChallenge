@@ -89,7 +89,7 @@ resource "aws_cloudfront_distribution" "root_s3_distribution" {
 
         lambda_function_association {
         event_type   = "viewer-request"
-        lambda_arn   = aws_lambda_function.rewrite_urls.qualified_arn
+        lambda_arn   = module.lambda_function.rewrite_urls_arn
         include_body = false
     }
     } 
