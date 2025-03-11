@@ -72,7 +72,6 @@ resource "aws_cloudfront_function" "redirect_html" {
     code = <<-EOF
         function handler(event) {
             var request = event.request;
-            var response = event.response;
 
             // If URL ends with .html, redirect to clean version
             if (request.uri.endsWith(".html")) {
@@ -80,13 +79,15 @@ resource "aws_cloudfront_function" "redirect_html" {
                 return {
                     statusCode: 301,
                     statusDescription: "Moved Permanently",
-                headers: {
-                    location: { value: cleanUri }
-                }
-            };
-        }
+                    headers: {
+                        location: { value: cleanUri },
+                        "cache-control": { value: "no-store" },
+                        "content-type": { value: "text/html; charset=UTF-8" }
+                    }
+                };
+            }
 
-        return response;
+            return request;
         }
     EOF
 }
